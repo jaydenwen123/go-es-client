@@ -15,7 +15,7 @@ var ctx = context.Background()
 
 func TestCatApi_Allocation(t *testing.T) {
 
-	data, err := Cat(client).Allocation().Do(ctx)
+	data, err := CatAPI(client).Allocation().Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())
 		return
@@ -24,7 +24,7 @@ func TestCatApi_Allocation(t *testing.T) {
 }
 
 func TestCatApi_Shards(t *testing.T) {
-	data, err := Cat(client).Shards().Pretty().Do(ctx)
+	data, err := CatAPI(client).Shards().Pretty().Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())
 		return
@@ -33,7 +33,7 @@ func TestCatApi_Shards(t *testing.T) {
 }
 
 func TestIndicesApi(t *testing.T) {
-	data, err := Cat(client).Indices().Pretty().Do(ctx)
+	data, err := CatApi(client).Indices().Pretty().Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())
 		return
@@ -42,7 +42,7 @@ func TestIndicesApi(t *testing.T) {
 }
 
 func TestIndicesApi_Index(t *testing.T) {
-	data, err := Cat(client).Indices().
+	data, err := CatApi(client).Indices().
 		Index(".monitoring-es-7-2020.04.29").
 		//Health().
 		Do(ctx)
@@ -52,7 +52,7 @@ func TestIndicesApi_Index(t *testing.T) {
 	}
 	t.Log("the data:\n", string(data))
 	t.Log("======================")
-	data, err = Cat(client).Indices().
+	data, err = CatApi(client).Indices().
 		Index(".monitoring-es-7-2020.04.29").
 		Pretty().
 		Do(ctx)
@@ -64,13 +64,13 @@ func TestIndicesApi_Index(t *testing.T) {
 }
 
 func TestCatApi_Health(t *testing.T) {
-	data, err := (&CatApi{}).Health().Do(ctx)
+	data, err := (&Cat{}).Health().Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())
 		return
 	}
 	t.Log("the data:\n", string(data))
-	data, err = Cat(client).Health().
+	data, err = CatAPI(client).Health().
 		Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())

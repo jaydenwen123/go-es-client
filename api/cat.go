@@ -10,80 +10,80 @@ import (
 )
 
 type ShardsApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/shards/{index}
 func (s *ShardsApi) Index(index string) *ShardsApi {
 	if s != nil {
-		s.CatApi.path += "/" + index
+		s.Cat.path += "/" + index
 	}
 	return s
 }
 
 type IndicesApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/indices/{index}
-func (i *IndicesApi) Index(index string) *CatApi {
+func (i *IndicesApi) Index(index string) *Cat {
 	if i != nil {
-		i.CatApi.path += "/" + index
+		i.Cat.path += "/" + index
 	}
-	return i.CatApi
+	return i.Cat
 }
 
 type SegmentsApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/segments/{index}
 func (s *SegmentsApi) Index(index string) *SegmentsApi {
 	if s != nil {
-		s.CatApi.path += "/" + index
+		s.Cat.path += "/" + index
 	}
 	return s
 }
 
 type CountApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/count/{index}
 func (c *CountApi) Index(index string) *CountApi {
 	if c != nil {
-		c.CatApi.path += "/" + index
+		c.Cat.path += "/" + index
 	}
 	return c
 }
 
 type RecoveryApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/recovery/{index}
 func (r *RecoveryApi) Index(index string) *RecoveryApi {
 	if r != nil {
-		r.CatApi.path += "/" + index
+		r.Cat.path += "/" + index
 	}
 	return r
 }
 
 type AliasesApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/aliases/{alias}
 func (a *AliasesApi) Index(index string) *AliasesApi {
 	if a != nil {
-		a.CatApi.path += "/" + index
+		a.Cat.path += "/" + index
 	}
 	return a
 }
 
 //ThreadPoolApi
 type ThreadPoolApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/thread_pool/{thread_pools}
@@ -92,14 +92,14 @@ func (a *ThreadPoolApi) ThreadPools(names ...string) *ThreadPoolApi {
 		if len(names) == 0 {
 			return a
 		}
-		a.CatApi.path += "/" + strings.Join(names, ",")
+		a.Cat.path += "/" + strings.Join(names, ",")
 	}
 	return a
 }
 
 //FielddataApi
 type FielddataApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/fielddata/{fields}
@@ -108,31 +108,31 @@ func (a *FielddataApi) Fields(fields ...string) *FielddataApi {
 		if len(fields) == 0 {
 			return a
 		}
-		a.CatApi.path += "/" + strings.Join(fields, ",")
+		a.Cat.path += "/" + strings.Join(fields, ",")
 	}
 	return a
 }
 
 type TemplatesApi struct {
-	*CatApi
+	*Cat
 }
 
 //_cat/templates/{name}
 func (a *FielddataApi) Name(name string) *FielddataApi {
 	if a != nil {
-		a.CatApi.path += "/" + name
+		a.Cat.path += "/" + name
 	}
 	return a
 }
 
-type CatApi struct {
+type Cat struct {
 	client *elastic.Client
 	param  url.Values
 	path   string
 }
 
 //Erase 擦处信息
-func (c *CatApi) Erase() (path string, param url.Values) {
+func (c *Cat) Erase() (path string, param url.Values) {
 	path = c.path
 	param = c.param
 	c.path = "/_cat"
@@ -140,30 +140,39 @@ func (c *CatApi) Erase() (path string, param url.Values) {
 	return
 }
 
-func (c *CatApi) Client() *elastic.Client {
+func (c *Cat) Client() *elastic.Client {
 	if c != nil {
 		return c.client
 	}
 	return nil
 }
 
-func (c *CatApi) Param() string {
+func (c *Cat) Param() string {
 	if c == nil {
 		return ""
 	}
 	return c.param.Encode()
 }
 
-func (c *CatApi) Path() string {
+func (c *Cat) Path() string {
 	if c == nil {
 		return ""
 	}
 	return c.path
 }
 
-//Cat api构造器
-func Cat(c *elastic.Client) *CatApi {
-	return &CatApi{
+//CatAPI 构造器
+func CatAPI(c *elastic.Client) *Cat {
+	return &Cat{
+		client: c,
+		param:  make(map[string][]string),
+		path:   "/_cat",
+	}
+}
+
+//CatApi 构造器
+func CatApi(c *elastic.Client) *Cat {
+	return &Cat{
 		client: c,
 		param:  make(map[string][]string),
 		path:   "/_cat",
@@ -171,7 +180,7 @@ func Cat(c *elastic.Client) *CatApi {
 }
 
 //Do 执行查询
-func (c *CatApi) Do(ctx context.Context) ([]byte, error) {
+func (c *Cat) Do(ctx context.Context) ([]byte, error) {
 	if c.client == nil {
 		return nil, fmt.Errorf("client is nil,you should call Cat(c *elastic.Client) to init client")
 	}
@@ -181,7 +190,7 @@ func (c *CatApi) Do(ctx context.Context) ([]byte, error) {
 	//构建请求
 	path := c.path
 	fmt.Println("=======Cat Api path:<", path, ">==================")
-	_,bdata, err := c.client.Get(ctx, path, nil)
+	_, bdata, err := c.client.Get(ctx, path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +198,7 @@ func (c *CatApi) Do(ctx context.Context) ([]byte, error) {
 }
 
 //Pretty 格式化显示信息
-func (c *CatApi) Pretty() *CatApi {
+func (c *Cat) Pretty() *Cat {
 	if c.path == "/_cat" {
 		//跳过，否则会error
 		return c
@@ -204,23 +213,23 @@ func (c *CatApi) Pretty() *CatApi {
 //_cat/allocation
 //shards disk.indices disk.used disk.avail disk.total disk.percent host      ip        node
 //    18      270.5mb   205.4gb       28gb    233.4gb           87 127.0.0.1 127.0.0.1 JAYDENWEN-MB0
-func (c *CatApi) Allocation() *CatApi {
+func (c *Cat) Allocation() *Cat {
 	c.path += "/allocation"
 	return c
 }
 
 //_cat/shards
-func (c *CatApi) Shards() *ShardsApi {
+func (c *Cat) Shards() *ShardsApi {
 	if c != nil {
 		c.path += "/shards"
 	}
 	return &ShardsApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/master
-func (c *CatApi) Master() *CatApi {
+func (c *Cat) Master() *Cat {
 	if c != nil {
 		c.path += "/master"
 	}
@@ -228,7 +237,7 @@ func (c *CatApi) Master() *CatApi {
 }
 
 //_cat/nodes
-func (c *CatApi) Nodes() *CatApi {
+func (c *Cat) Nodes() *Cat {
 	if c != nil {
 		c.path += "/nodes"
 	}
@@ -236,7 +245,7 @@ func (c *CatApi) Nodes() *CatApi {
 }
 
 //_cat/tasks
-func (c *CatApi) Tasks() *CatApi {
+func (c *Cat) Tasks() *Cat {
 	if c != nil {
 		c.path += "/tasks"
 	}
@@ -244,47 +253,47 @@ func (c *CatApi) Tasks() *CatApi {
 }
 
 //_cat/indices
-func (c *CatApi) Indices() *IndicesApi {
+func (c *Cat) Indices() *IndicesApi {
 	if c != nil {
 		c.path += "/indices"
 	}
 	return &IndicesApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/segments
-func (c *CatApi) Segments() *SegmentsApi {
+func (c *Cat) Segments() *SegmentsApi {
 	if c != nil {
 		c.path += "/segments"
 	}
 	return &SegmentsApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/count
-func (c *CatApi) Count() *CountApi {
+func (c *Cat) Count() *CountApi {
 	if c != nil {
 		c.path += "/count"
 	}
 	return &CountApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/recovery
-func (c *CatApi) Recovery() *RecoveryApi {
+func (c *Cat) Recovery() *RecoveryApi {
 	if c != nil {
 		c.path += "/recovery"
 	}
 	return &RecoveryApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/health
-func (c *CatApi) Health() *CatApi {
+func (c *Cat) Health() *Cat {
 	if c != nil {
 		c.path += "/health"
 	}
@@ -292,7 +301,7 @@ func (c *CatApi) Health() *CatApi {
 }
 
 //_cat/pending_tasks
-func (c *CatApi) PendingTasks() *CatApi {
+func (c *Cat) PendingTasks() *Cat {
 	if c != nil {
 		c.path += "/pending_tasks"
 	}
@@ -300,27 +309,27 @@ func (c *CatApi) PendingTasks() *CatApi {
 }
 
 //_cat/aliases
-func (c *CatApi) Aliases() *AliasesApi {
+func (c *Cat) Aliases() *AliasesApi {
 	if c != nil {
 		c.path += "/aliases"
 	}
 	return &AliasesApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/thread_pool
-func (c *CatApi) ThreadPool() *ThreadPoolApi {
+func (c *Cat) ThreadPool() *ThreadPoolApi {
 	if c != nil {
 		c.path += "/thread_pool"
 	}
 	return &ThreadPoolApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/plugins
-func (c *CatApi) Plugins() *CatApi {
+func (c *Cat) Plugins() *Cat {
 	if c != nil {
 		c.path += "/plugins"
 	}
@@ -328,17 +337,17 @@ func (c *CatApi) Plugins() *CatApi {
 }
 
 //_cat/fielddata
-func (c *CatApi) Fielddata() *FielddataApi {
+func (c *Cat) Fielddata() *FielddataApi {
 	if c != nil {
 		c.path += "/fielddata"
 	}
 	return &FielddataApi{
-		CatApi: c,
+		Cat: c,
 	}
 }
 
 //_cat/nodeattrs
-func (c *CatApi) Nodeattrs() *CatApi {
+func (c *Cat) Nodeattrs() *Cat {
 	if c != nil {
 		c.path += "/nodeattrs"
 	}
@@ -346,7 +355,7 @@ func (c *CatApi) Nodeattrs() *CatApi {
 }
 
 //_cat/repositories
-func (c *CatApi) Repositories() *CatApi {
+func (c *Cat) Repositories() *Cat {
 	if c != nil {
 		c.path += "/repositories"
 	}
@@ -354,7 +363,7 @@ func (c *CatApi) Repositories() *CatApi {
 }
 
 //_cat/snapshots/{repository}
-func (c *CatApi) Snapshots(repository string) *CatApi {
+func (c *Cat) Snapshots(repository string) *Cat {
 	if c != nil {
 		c.path += "/snapshots/" + repository
 	}
@@ -362,11 +371,11 @@ func (c *CatApi) Snapshots(repository string) *CatApi {
 }
 
 //_cat/templates
-func (c *CatApi) Templates() *TemplatesApi {
+func (c *Cat) Templates() *TemplatesApi {
 	if c != nil {
 		c.path += "/templates"
 	}
 	return &TemplatesApi{
-		CatApi: c,
+		Cat: c,
 	}
 }

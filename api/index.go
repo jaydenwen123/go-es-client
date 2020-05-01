@@ -23,7 +23,6 @@ type IndexInfo struct {
 type Aliases struct {
 }
 
-//todo 补充
 type MigrationMappingPropertyHashes struct {
 	MigrationVersion string `json:"migrationVersion"`
 	Task             string `json:"task"`
@@ -160,8 +159,8 @@ type Settings struct {
 	Index IndexObj `json:"index"`
 }
 
-//IndexApi 索引api
-type IndexApi struct {
+//Index 索引api
+type Index struct {
 	index  string
 	client *elastic.Client
 	param  url.Values
@@ -188,21 +187,21 @@ type IndexErrorInfo struct {
 	Status int `json:"status"`
 }
 
-func (i *IndexApi) Param() string {
+func (i *Index) Param() string {
 	if i == nil {
 		return ""
 	}
 	return i.param.Encode()
 }
 
-func (i *IndexApi) Path() string {
+func (i *Index) Path() string {
 	if i == nil {
 		return ""
 	}
 	return i.path
 }
 
-func (i *IndexApi) Client() *elastic.Client {
+func (i *Index) Client() *elastic.Client {
 	if i != nil {
 		return i.client
 	}
@@ -210,15 +209,23 @@ func (i *IndexApi) Client() *elastic.Client {
 }
 
 //Index index api
-func Index(client *elastic.Client) *IndexApi {
-	return &IndexApi{
+func IndexAPI(client *elastic.Client) *Index {
+	return &Index{
+		client: client,
+		param:  make(map[string][]string),
+	}
+}
+
+//Index index api
+func IndexApi(client *elastic.Client) *Index {
+	return &Index{
 		client: client,
 		param:  make(map[string][]string),
 	}
 }
 
 //新增索引 put
-func (i *IndexApi) Create(ctx context.Context, index string) (*IndexErrorInfo,error) {
+func (i *Index) Create(ctx context.Context, index string) (*IndexErrorInfo, error) {
 	var (
 		err   error
 		bdata []byte
@@ -228,12 +235,12 @@ func (i *IndexApi) Create(ctx context.Context, index string) (*IndexErrorInfo,er
 	if err != nil {
 		return nil, err
 	}
-	rsp,bdata, err = i.client.Put(ctx, i.path, nil)
+	rsp, bdata, err = i.client.Put(ctx, i.path, nil)
 	return i.wrapResp(err, rsp, bdata)
 }
 
 //wrapResp 包装回包
-func (i *IndexApi) wrapResp(err error, rsp *http.Response, bdata []byte) (*IndexErrorInfo, error) {
+func (i *Index) wrapResp(err error, rsp *http.Response, bdata []byte) (*IndexErrorInfo, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +254,7 @@ func (i *IndexApi) wrapResp(err error, rsp *http.Response, bdata []byte) (*Index
 
 //删除索引
 //delete
-func (i *IndexApi) Delete(ctx context.Context, index string) (*IndexErrorInfo, error) {
+func (i *Index) Delete(ctx context.Context, index string) (*IndexErrorInfo, error) {
 	var (
 		err   error
 		rsp   *http.Response
@@ -262,7 +269,7 @@ func (i *IndexApi) Delete(ctx context.Context, index string) (*IndexErrorInfo, e
 }
 
 //validIndex 验证索引
-func (i *IndexApi) validIndex(index string) error {
+func (i *Index) validIndex(index string) error {
 	if len(strings.TrimSpace(index)) == 0 {
 		return fmt.Errorf("the index is empty")
 	}
@@ -273,21 +280,31 @@ func (i *IndexApi) validIndex(index string) error {
 //todo
 //reindex重建索引
 
-//查看索引
-//get
-func (i *IndexApi) Get(ctx context.Context, index string) (*IndexInfo, *IndexErrorInfo, error) {
+//All is the GetAll alias function.
+func (i *Index) All(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+	return i.Get(ctx)
+}
+
+//GetAll get all indices
+func (i *Index) GetAll(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+	return i.Get(ctx, )
+}
+
+//Get 查看索引
+// if indices is nil or len(indices)==0  path use /_all
+func (i *Index) Get(ctx context.Context, indices ...string) (map[string]*IndexInfo, *IndexErrorInfo, error) {
 	var
 	(
-		indexInfo      map[string]*IndexInfo
+		indexInfoMap   map[string]*IndexInfo
 		indexErrorInfo IndexErrorInfo
 		err            error
 		data           []byte
 	)
-	err = i.validIndex(index)
-	if err != nil {
-		return nil, nil, err
+	if indices == nil || len(indices) == 0 || len(indices) == 1 && indices[0] == "" {
+		i.path = "/_all"
+	} else {
+		i.path = "/" + strings.Join(indices, ",")
 	}
-
 	_, data, err = i.client.Get(ctx, i.path, nil)
 
 	if gjson.Get(string(data), "error").Exists() {
@@ -298,18 +315,18 @@ func (i *IndexApi) Get(ctx context.Context, index string) (*IndexInfo, *IndexErr
 		}
 		return nil, &indexErrorInfo, nil
 	} else {
-		indexInfo = make(map[string]*IndexInfo)
-		err = jsoniter.Unmarshal(data, &indexInfo)
+		indexInfoMap = make(map[string]*IndexInfo)
+		err = jsoniter.Unmarshal(data, &indexInfoMap)
 		if err != nil {
 			logs.Error("jsoniter.Unmarshal error:%s", err.Error())
 			return nil, nil, err
 		}
-		return indexInfo[index], nil, nil
+		return indexInfoMap, nil, nil
 	}
 }
 
 //Erase 擦处信息
-func (i *IndexApi) Erase() (path string, param url.Values) {
+func (i *Index) Erase() (path string, param url.Values) {
 	path = i.path
 	param = i.param
 	i.path = ""
@@ -318,7 +335,7 @@ func (i *IndexApi) Erase() (path string, param url.Values) {
 }
 
 //Exist 判断索引是否存在
-func (i *IndexApi) Exist(ctx context.Context, index string) (bool, error) {
+func (i *Index) Exist(ctx context.Context, index string) (bool, error) {
 	var resp *http.Response
 	var err error
 	err = i.validIndex(index)
@@ -330,4 +347,35 @@ func (i *IndexApi) Exist(ctx context.Context, index string) (bool, error) {
 		return false, err
 	}
 	return resp.StatusCode == http.StatusOK, nil
+}
+
+//Close 关闭索引
+func (i *Index) Close(ctx context.Context, index string) (bool, error) {
+	return i.open_close(ctx, index, "/_close")
+}
+
+//Open 打开索引
+func (i *Index) Open(ctx context.Context, index string) (bool, error) {
+	return i.open_close(ctx, index, "/_open")
+}
+
+func (i *Index) open_close(ctx context.Context, index string, op string) (bool, error) {
+	var err error
+	err = i.validIndex(index)
+	if err != nil {
+		return false, err
+	}
+	i.path += op
+	resp, bdata, err := i.client.Post(ctx, i.path, nil)
+	if err != nil {
+		logs.Error("do <%s>  action error:%s", i.path, err.Error())
+		return false, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("the error info:%s", bdata)
+	}
+	if gjson.Get(string(bdata), "error").Exists() {
+		return false, fmt.Errorf("the error info:%s", bdata)
+	}
+	return true, nil
 }

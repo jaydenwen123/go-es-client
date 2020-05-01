@@ -55,3 +55,6 @@ func Test_Search(t *testing.T) {
 	fmt.Println("/.kibana_1/_search-->", string(data), err)
 
 }
+
+func Test(t *testing.T)  {
+}
