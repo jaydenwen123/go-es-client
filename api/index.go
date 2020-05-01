@@ -13,6 +13,15 @@ import (
 	elastic "github.com/jaydenwen123/go-es-client"
 )
 
+type getActionOp string
+
+const (
+	op_index   getActionOp = "index"
+	op_mapping getActionOp = "_mapping"
+	op_setting getActionOp = "_settings"
+	op_alias   getActionOp = "_alias"
+)
+
 type IndexInfo struct {
 	Aliases  Aliases  `json:"aliases"`
 	Mappings Mappings `json:"mappings"`
@@ -156,7 +165,7 @@ type IndexObj struct {
 	Version            Version `json:"version"`
 }
 type Settings struct {
-	Index IndexObj `json:"index"`
+	Index IndexObj `json:"op_index"`
 }
 
 //Index 索引api
@@ -175,14 +184,14 @@ type IndexErrorInfo struct {
 			ResourceType string `json:"resource.type"`
 			ResourceID   string `json:"resource.id"`
 			IndexUUID    string `json:"index_uuid"`
-			Index        string `json:"index"`
+			Index        string `json:"op_index"`
 		} `json:"root_cause"`
 		Type         string `json:"type"`
 		Reason       string `json:"reason"`
 		ResourceType string `json:"resource.type"`
 		ResourceID   string `json:"resource.id"`
 		IndexUUID    string `json:"index_uuid"`
-		Index        string `json:"index"`
+		Index        string `json:"op_index"`
 	} `json:"error"`
 	Status int `json:"status"`
 }
@@ -208,7 +217,7 @@ func (i *Index) Client() *elastic.Client {
 	return nil
 }
 
-//Index index api
+//Index op_index api
 func IndexAPI(client *elastic.Client) *Index {
 	return &Index{
 		client: client,
@@ -216,7 +225,7 @@ func IndexAPI(client *elastic.Client) *Index {
 	}
 }
 
-//Index index api
+//Index op_index api
 func IndexApi(client *elastic.Client) *Index {
 	return &Index{
 		client: client,
@@ -271,7 +280,7 @@ func (i *Index) Delete(ctx context.Context, index string) (*IndexErrorInfo, erro
 //validIndex 验证索引
 func (i *Index) validIndex(index string) error {
 	if len(strings.TrimSpace(index)) == 0 {
-		return fmt.Errorf("the index is empty")
+		return fmt.Errorf("the op_index is empty")
 	}
 	i.path = "/" + index
 	return nil
@@ -280,22 +289,80 @@ func (i *Index) validIndex(index string) error {
 //todo
 //reindex重建索引
 
-//All is the GetAll alias function.
-func (i *Index) All(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
-	return i.Get(ctx)
+//Settings 获取单个索引的setting信息
+func (i *Index) Settings(ctx context.Context, index string) (*Settings, *IndexErrorInfo, error) {
+	multiSettings, info, err := i.MultiSettings(ctx, index)
+	if err != nil {
+		return nil, info, err
+	}
+	return multiSettings[index], info, err
 }
 
-//GetAll get all indices
-func (i *Index) GetAll(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
-	return i.Get(ctx, )
+//MultiSettings 获取多个索引的settings信息
+func (i *Index) MultiSettings(ctx context.Context, indices ...string) (map[string]*Settings, *IndexErrorInfo, error) {
+	bdata, info, err := i.doGetAction(ctx, op_setting, indices...)
+	multiMap := make(map[string]*Settings)
+	err = i.decodeRespData(bdata, &multiMap)
+	return multiMap, info, err
 }
 
-//Get 查看索引
+//Mapping 获取单个索引的mapping信息
+func (i *Index) Mapping(ctx context.Context, index string) (*Mappings, *IndexErrorInfo, error) {
+	multiMappings, info, err := i.MultiMapping(ctx, index)
+	if err != nil {
+		return nil, info, err
+	}
+	return multiMappings[index], info, err
+}
+
+//MultiMapping 获取多个索引的mappings
+func (i *Index) MultiMapping(ctx context.Context, indices ...string) (map[string]*Mappings, *IndexErrorInfo, error) {
+	bdata, info, err := i.doGetAction(ctx, op_mapping, indices...)
+	multiMap := make(map[string]*Mappings)
+	err = i.decodeRespData(bdata, &multiMap)
+	return multiMap, info, err
+}
+
+//AllIndices is the GetAllIndices alias function.
+func (i *Index) AllIndices(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+	return i.GetMultiIndex(ctx)
+}
+
+//GetAllIndices get all indices
+func (i *Index) GetAllIndices(ctx context.Context) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+	return i.GetMultiIndex(ctx)
+}
+
+//GetIndex 获取单个索引的详细信息
+func (i *Index) GetIndex(ctx context.Context, index string) (*IndexInfo, *IndexErrorInfo, error) {
+	multiInfo, info, err := i.GetMultiIndex(ctx, index)
+	return multiInfo[index], info, err
+}
+
+//GetMultiIndex 查看多个索引信息
 // if indices is nil or len(indices)==0  path use /_all
-func (i *Index) Get(ctx context.Context, indices ...string) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+func (i *Index) GetMultiIndex(ctx context.Context, indices ...string) (map[string]*IndexInfo, *IndexErrorInfo, error) {
+	bdata, info, err := i.doGetAction(ctx, op_index, indices...)
+	if err != nil {
+		return nil, info, err
+	}
+	multiMap := make(map[string]*IndexInfo)
+	err = i.decodeRespData(bdata, &multiMap)
+	return multiMap, info, err
+}
+
+func (i *Index) decodeRespData(bdata []byte, multiMap interface{}) error {
+	err := jsoniter.Unmarshal(bdata, multiMap)
+	if err != nil {
+		logs.Error("jsoniter.Unmarshal error")
+	}
+	return err
+}
+
+func (i *Index) doGetAction(ctx context.Context, op getActionOp, indices ...string, ) ([]byte, *IndexErrorInfo, error) {
 	var
 	(
-		indexInfoMap   map[string]*IndexInfo
+		//indexInfoMap   interface{}
 		indexErrorInfo IndexErrorInfo
 		err            error
 		data           []byte
@@ -305,8 +372,11 @@ func (i *Index) Get(ctx context.Context, indices ...string) (map[string]*IndexIn
 	} else {
 		i.path = "/" + strings.Join(indices, ",")
 	}
+	//拼接op
+	if op != op_index {
+		i.path += "/" + string(op)
+	}
 	_, data, err = i.client.Get(ctx, i.path, nil)
-
 	if gjson.Get(string(data), "error").Exists() {
 		err = jsoniter.Unmarshal(data, &indexErrorInfo)
 		if err != nil {
@@ -314,15 +384,8 @@ func (i *Index) Get(ctx context.Context, indices ...string) (map[string]*IndexIn
 			return nil, nil, err
 		}
 		return nil, &indexErrorInfo, nil
-	} else {
-		indexInfoMap = make(map[string]*IndexInfo)
-		err = jsoniter.Unmarshal(data, &indexInfoMap)
-		if err != nil {
-			logs.Error("jsoniter.Unmarshal error:%s", err.Error())
-			return nil, nil, err
-		}
-		return indexInfoMap, nil, nil
 	}
+	return data, nil, nil
 }
 
 //Erase 擦处信息

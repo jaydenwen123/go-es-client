@@ -64,7 +64,7 @@ func TestIndicesApi_Index(t *testing.T) {
 }
 
 func TestCatApi_Health(t *testing.T) {
-	data, err := (&Cat{}).Health().Do(ctx)
+	data, err := CatAPI(client).Health().Do(ctx)
 	if err != nil {
 		t.Error("TestCat error:", err.Error())
 		return

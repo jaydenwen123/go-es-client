@@ -13,7 +13,7 @@ type ShardsApi struct {
 	*Cat
 }
 
-//_cat/shards/{index}
+//_cat/shards/{op_index}
 func (s *ShardsApi) Index(index string) *ShardsApi {
 	if s != nil {
 		s.Cat.path += "/" + index
@@ -25,7 +25,7 @@ type IndicesApi struct {
 	*Cat
 }
 
-//_cat/indices/{index}
+//_cat/indices/{op_index}
 func (i *IndicesApi) Index(index string) *Cat {
 	if i != nil {
 		i.Cat.path += "/" + index
@@ -37,7 +37,7 @@ type SegmentsApi struct {
 	*Cat
 }
 
-//_cat/segments/{index}
+//_cat/segments/{op_index}
 func (s *SegmentsApi) Index(index string) *SegmentsApi {
 	if s != nil {
 		s.Cat.path += "/" + index
@@ -49,7 +49,7 @@ type CountApi struct {
 	*Cat
 }
 
-//_cat/count/{index}
+//_cat/count/{op_index}
 func (c *CountApi) Index(index string) *CountApi {
 	if c != nil {
 		c.Cat.path += "/" + index
@@ -61,7 +61,7 @@ type RecoveryApi struct {
 	*Cat
 }
 
-//_cat/recovery/{index}
+//_cat/recovery/{op_index}
 func (r *RecoveryApi) Index(index string) *RecoveryApi {
 	if r != nil {
 		r.Cat.path += "/" + index

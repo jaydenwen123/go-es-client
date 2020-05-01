@@ -111,12 +111,12 @@ func (c *Client) DoWithAddress(ctx context.Context, address, method, url string,
 		return nil, nil, err
 	}
 	realUrl := address + url
-	fmt.Println("address:", url)
 	bodyData, err := c.parseBody(body)
 	if err != nil {
 		return nil, nil, err
 	}
 	//todo 后面改造
+	logs.Debug("the execute url:[%s]", realUrl)
 	req, err := http.NewRequest(method, realUrl, bodyData)
 	if err != nil {
 		logs.Error("http.NewRequest error:%s", err.Error())

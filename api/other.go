@@ -9,11 +9,11 @@ type AllApi struct {
 	path   string
 }
 
-//func All(client *elastic.Client) (*AllApi,error) {
+//func AllIndices(client *elastic.Client) (*AllApi,error) {
 //	a := &AllApi{
 //		client: client,
 //		path:   "/_all",
 //	}
-//	_, bdata, err := a.client.Get(context.Background(), a.path, nil)
+//	_, bdata, err := a.client.GetIndex(context.Background(), a.path, nil)
 //	return
 //}
