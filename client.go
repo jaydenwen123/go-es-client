@@ -85,32 +85,32 @@ func NewClient(options ...ClientOption) *Client {
 func (c *Client) BuildSearchQuery() {
 }
 
-func (c *Client) Get(ctx context.Context, url string, body interface{}) (*http.Response, []byte, error) {
-	return c.Do(ctx, "GET", url, body)
+func (c *Client) Get(ctx context.Context, path string, body interface{}) (*http.Response, []byte, error) {
+	return c.Do(ctx, "GET", path, body)
 
 }
 
-func (c *Client) Post(ctx context.Context, url string, body interface{}) (*http.Response, []byte, error) {
-	return c.Do(ctx, "POST", url, body)
+func (c *Client) Post(ctx context.Context, path string, body interface{}) (*http.Response, []byte, error) {
+	return c.Do(ctx, "POST", path, body)
 
 }
 
-func (c *Client) Delete(ctx context.Context, url string, body interface{}) (*http.Response, []byte, error) {
-	return c.Do(ctx, "DELETE", url, body)
+func (c *Client) Delete(ctx context.Context, path string, body interface{}) (*http.Response, []byte, error) {
+	return c.Do(ctx, "DELETE", path, body)
 }
 
-func (c *Client) Put(ctx context.Context, url string, body interface{}) (*http.Response, []byte, error) {
-	return c.Do(ctx, "PUT", url, body)
+func (c *Client) Put(ctx context.Context, path string, body interface{}) (*http.Response, []byte, error) {
+	return c.Do(ctx, "PUT", path, body)
 }
 
 //DoWithAddress 指定地址请求
-func (c *Client) DoWithAddress(ctx context.Context, address, method, url string, body interface{}) (*http.Response, []byte, error) {
+func (c *Client) DoWithAddress(ctx context.Context, address, method, path string, body interface{}) (*http.Response, []byte, error) {
 	//todo 通过ctx来控制超时
-	address, err := c.validParam(method, address, url)
+	address, err := c.validParam(method, address, path)
 	if err != nil {
 		return nil, nil, err
 	}
-	realUrl := address + url
+	realUrl := address + path
 	bodyData, err := c.parseBody(body)
 	if err != nil {
 		return nil, nil, err

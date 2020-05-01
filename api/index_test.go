@@ -73,7 +73,7 @@ func TestIndexApi_Get2(t *testing.T) {
 func TestIndexApi_Settings(t *testing.T) {
 	//student
 	//sucInfo, errorInfo, err := Index(client).GetIndex(ctx, ".kibana_task_manager_1","student")
-	//sucInfo, errorInfo, err := IndexAPI(client).Settings(ctx,"student")
+	//sucInfo, errorInfo, err := IndexAPI(client).SettingInfo(ctx,"student")
 	//sucInfo, errorInfo, err := IndexApi(client).MultiSettings(ctx, ".kibana_task_manager_1","student")
 	sucInfo, errorInfo, err := IndexApi(client).MultiSettings(ctx)
 	if err != nil {

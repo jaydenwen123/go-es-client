@@ -126,9 +126,7 @@ func (a *FielddataApi) Name(name string) *FielddataApi {
 }
 
 type Cat struct {
-	client *elastic.Client
-	param  url.Values
-	path   string
+	*baseCtx
 }
 
 //Erase 擦处信息
@@ -140,43 +138,20 @@ func (c *Cat) Erase() (path string, param url.Values) {
 	return
 }
 
-func (c *Cat) Client() *elastic.Client {
-	if c != nil {
-		return c.client
-	}
-	return nil
-}
-
-func (c *Cat) Param() string {
-	if c == nil {
-		return ""
-	}
-	return c.param.Encode()
-}
-
-func (c *Cat) Path() string {
-	if c == nil {
-		return ""
-	}
-	return c.path
-}
-
 //CatAPI 构造器
 func CatAPI(c *elastic.Client) *Cat {
 	return &Cat{
-		client: c,
-		param:  make(map[string][]string),
-		path:   "/_cat",
+		baseCtx: &baseCtx{
+			path:   "/_cat",
+			client: c,
+			param:  make(map[string][]string),
+		},
 	}
 }
 
 //CatApi 构造器
 func CatApi(c *elastic.Client) *Cat {
-	return &Cat{
-		client: c,
-		param:  make(map[string][]string),
-		path:   "/_cat",
-	}
+	return CatAPI(c)
 }
 
 //Do 执行查询
