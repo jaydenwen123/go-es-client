@@ -289,6 +289,23 @@ func (i *Index) validIndex(index string) error {
 //todo
 //reindex重建索引
 
+//Alias 获取单个索引的alias信息
+func (i *Index) Alias(ctx context.Context, index string) (*Aliases, *IndexErrorInfo, error) {
+	multiAlias, info, err := i.MultiAlias(ctx, index)
+	if err != nil {
+		return nil, info, err
+	}
+	return multiAlias[index], info, err
+}
+
+//MultiAlias 获取多个索引的alias
+func (i *Index) MultiAlias(ctx context.Context, indices ...string) (map[string]*Aliases, *IndexErrorInfo, error) {
+	bdata, info, err := i.doGetAction(ctx, op_mapping, indices...)
+	multiMap := make(map[string]*Aliases)
+	err = i.decodeRespData(bdata, &multiMap)
+	return multiMap, info, err
+}
+
 //Settings 获取单个索引的setting信息
 func (i *Index) Settings(ctx context.Context, index string) (*Settings, *IndexErrorInfo, error) {
 	multiSettings, info, err := i.MultiSettings(ctx, index)

@@ -67,3 +67,23 @@ func TestIndexApi_Get2(t *testing.T) {
 	t.Logf("the get op_index count:<%d>",len(sucInfo))
 	t.Logf("the op_index get success:\n%s", util.Obj2JsonStrIndent(sucInfo,"","  "))
 }
+
+
+
+func TestIndexApi_Settings(t *testing.T) {
+	//student
+	//sucInfo, errorInfo, err := Index(client).GetIndex(ctx, ".kibana_task_manager_1","student")
+	//sucInfo, errorInfo, err := IndexAPI(client).Settings(ctx,"student")
+	//sucInfo, errorInfo, err := IndexApi(client).MultiSettings(ctx, ".kibana_task_manager_1","student")
+	sucInfo, errorInfo, err := IndexApi(client).MultiSettings(ctx)
+	if err != nil {
+		t.Errorf("the op_index get error:\n%s", err.Error())
+		return
+	}
+	if errorInfo != nil {
+		t.Errorf("the op_index get failed:\n%s", util.Obj2JsonStrIndent(errorInfo,"","  "))
+		return
+	}
+	t.Logf("the get op_index count:<%d>",len(sucInfo))
+	t.Logf("the op_index get success:\n%s", util.Obj2JsonStrIndent(sucInfo,"","  "))
+}
