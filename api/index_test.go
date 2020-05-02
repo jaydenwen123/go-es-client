@@ -42,7 +42,7 @@ func TestIndexApi_Exist(t *testing.T) {
 }
 
 func TestIndexApi_Create(t *testing.T) {
-	errInfo,err := IndexAPI(client).Create(ctx, "hello")
+	errInfo,err := IndexAPI(client).Create(ctx, "test_create")
 	if err != nil {
 		t.Errorf("create op_index error:\n%s\n%s",err.Error(),
 			util.Obj2JsonStrIndent(errInfo,"","  "))

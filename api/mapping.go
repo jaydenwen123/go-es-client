@@ -28,8 +28,6 @@ func MappingAPI(client *elastic.Client) *Mapping {
 	return MappingApi(client)
 }
 
-
-
 //set do real set mapping action.
 func (m *Mapping) set(ctx context.Context, bodyJson interface{}) error {
 	resp, bdata, err := m.client.Put(ctx, m.path, bodyJson)
@@ -37,6 +35,7 @@ func (m *Mapping) set(ctx context.Context, bodyJson interface{}) error {
 		logs.Error("exec set mapping op is error:%s", err.Error())
 		return err
 	}
+	m.path = ""
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("the error info:%s", bdata)
 	}
@@ -48,7 +47,6 @@ func (m *Mapping) SetMappingWithJson(ctx context.Context, index string, bodyJson
 	m.path = "/" + index + "/_mapping"
 	return m.set(ctx, bodyJson)
 }
-
 
 //SetWithJson 给index添加 or 更新mapping
 func (m *Mapping) SetWithJson(ctx context.Context, index string, bodyJson string) error {
@@ -67,7 +65,6 @@ func (m *Mapping) Set(ctx context.Context, index string, mappingInfo *MappingInf
 	m.path = "/" + index + "/_mapping"
 	return m.set(ctx, mappingInfo)
 }
-
 
 //AllMappings 查看所有的mappings
 func (m *Mapping) AllMappings(ctx context.Context) (map[string]*MappingInfo, *IndexErrorInfo, error) {
