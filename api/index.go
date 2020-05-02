@@ -14,12 +14,11 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-
-
+//todo 重新定义数据
 type IndexInfo struct {
-	Aliases  AliasInfo   `json:"aliases"`
-	Mappings MappingInfo `json:"mappings"`
-	Settings SettingInfo `json:"settings"`
+	Aliases  *AliasInfo   `json:"aliases,omitempty"`
+	Mappings *MappingInfo `json:"mappings,omitempty"`
+	Settings *SettingInfo `json:"settings,omitempty"`
 }
 
 //todo 补充
@@ -27,139 +26,139 @@ type AliasInfo struct {
 }
 
 type MigrationMappingPropertyHashes struct {
-	MigrationVersion string `json:"migrationVersion"`
-	Task             string `json:"task"`
-	UpdatedAt        string `json:"updated_at"`
-	References       string `json:"references"`
-	Namespace        string `json:"namespace"`
-	Type             string `json:"type"`
-	Config           string `json:"config"`
+	MigrationVersion string `json:"migrationVersion,omitempty"`
+	Task             string `json:"task,omitempty"`
+	UpdatedAt        string `json:"updated_at,omitempty"`
+	References       string `json:"references,omitempty"`
+	Namespace        string `json:"namespace,omitempty"`
+	Type             string `json:"type,omitempty"`
+	Config           string `json:"config,omitempty"`
 }
 type Meta struct {
-	MigrationMappingPropertyHashes MigrationMappingPropertyHashes `json:"migrationMappingPropertyHashes"`
+	MigrationMappingPropertyHashes *MigrationMappingPropertyHashes `json:"migrationMappingPropertyHashes,omitempty"`
 }
 type Config struct {
-	Dynamic    string `json:"dynamic"`
+	Dynamic    string `json:"dynamic,omitempty"`
 	Properties struct {
 		BuildNum struct {
-			Type string `json:"type"`
-		} `json:"buildNum"`
-	} `json:"properties"`
+			Type string `json:"type,omitempty"`
+		} `json:"buildNum,omitempty"`
+	} `json:"properties,omitempty"`
 }
 type Keyword struct {
-	Type        string `json:"type"`
-	IgnoreAbove int    `json:"ignore_above"`
+	Type        string `json:"type,omitempty"`
+	IgnoreAbove int    `json:"ignore_above,omitempty"`
 }
 type MigrationVersion struct {
-	Dynamic    string `json:"dynamic"`
+	Dynamic    string `json:"dynamic,omitempty"`
 	Properties struct {
 		Task struct {
-			Type   string `json:"type"`
+			Type   string `json:"type,omitempty"`
 			Fields struct {
-				Keyword Keyword `json:"keyword"`
-			} `json:"fields"`
-		} `json:"task"`
-	} `json:"properties"`
+				Keyword Keyword `json:"keyword,omitempty"`
+			} `json:"fields,omitempty"`
+		} `json:"task,omitempty"`
+	} `json:"properties,omitempty"`
 }
 
 type References struct {
-	Type       string `json:"type"`
+	Type       string `json:"type,omitempty"`
 	Properties struct {
 		ID struct {
-			Type string `json:"type"`
-		} `json:"id"`
+			Type string `json:"type,omitempty"`
+		} `json:"id,omitempty"`
 		Name struct {
-			Type string `json:"type"`
-		} `json:"name"`
+			Type string `json:"type,omitempty"`
+		} `json:"name,omitempty"`
 		Type struct {
-			Type string `json:"type"`
-		} `json:"type"`
-	} `json:"properties"`
+			Type string `json:"type,omitempty"`
+		} `json:"type,omitempty"`
+	} `json:"properties,omitempty"`
 }
 type Schedule struct {
 	Properties struct {
 		Interval struct {
-			Type string `json:"type"`
-		} `json:"interval"`
-	} `json:"properties"`
+			Type string `json:"type,omitempty"`
+		} `json:"interval,omitempty"`
+	} `json:"properties,omitempty"`
 }
 type TaskProperties struct {
 	Attempts struct {
-		Type string `json:"type"`
-	} `json:"attempts"`
+		Type string `json:"type,omitempty"`
+	} `json:"attempts,omitempty"`
 	OwnerID struct {
-		Type string `json:"type"`
-	} `json:"ownerId"`
+		Type string `json:"type,omitempty"`
+	} `json:"ownerId,omitempty"`
 	Params struct {
-		Type string `json:"type"`
-	} `json:"params"`
+		Type string `json:"type,omitempty"`
+	} `json:"params,omitempty"`
 	RetryAt struct {
-		Type string `json:"type"`
-	} `json:"retryAt"`
+		Type string `json:"type,omitempty"`
+	} `json:"retryAt,omitempty"`
 	RunAt struct {
-		Type string `json:"type"`
-	} `json:"runAt"`
-	Schedule    Schedule `json:"schedule"`
+		Type string `json:"type,omitempty"`
+	} `json:"runAt,omitempty"`
+	Schedule    Schedule `json:"schedule,omitempty"`
 	ScheduledAt struct {
-		Type string `json:"type"`
-	} `json:"scheduledAt"`
+		Type string `json:"type,omitempty"`
+	} `json:"scheduledAt,omitempty"`
 	Scope struct {
-		Type string `json:"type"`
-	} `json:"scope"`
+		Type string `json:"type,omitempty"`
+	} `json:"scope,omitempty"`
 	StartedAt struct {
-		Type string `json:"type"`
-	} `json:"startedAt"`
+		Type string `json:"type,omitempty"`
+	} `json:"startedAt,omitempty"`
 	State struct {
-		Type string `json:"type"`
-	} `json:"state"`
+		Type string `json:"type,omitempty"`
+	} `json:"state,omitempty"`
 	Status struct {
-		Type string `json:"type"`
-	} `json:"status"`
+		Type string `json:"type,omitempty"`
+	} `json:"status,omitempty"`
 	TaskType struct {
-		Type string `json:"type"`
-	} `json:"taskType"`
+		Type string `json:"type,omitempty"`
+	} `json:"taskType,omitempty"`
 	User struct {
-		Type string `json:"type"`
-	} `json:"user"`
+		Type string `json:"type,omitempty"`
+	} `json:"user,omitempty"`
 }
 type Properties struct {
-	Config           Config           `json:"config"`
-	MigrationVersion MigrationVersion `json:"migrationVersion"`
+	Config           Config           `json:"config,omitempty"`
+	MigrationVersion MigrationVersion `json:"migrationVersion,omitempty"`
 	Namespace        struct {
-		Type string `json:"type"`
-	} `json:"namespace"`
-	References References `json:"references"`
+		Type string `json:"type,omitempty"`
+	} `json:"namespace,omitempty"`
+	References References `json:"references,omitempty"`
 	Task       struct {
-		Properties TaskProperties `json:"properties"`
-	} `json:"task"`
+		Properties TaskProperties `json:"properties,omitempty"`
+	} `json:"task,omitempty"`
 	Type struct {
-		Type string `json:"type"`
-	} `json:"type"`
+		Type string `json:"type,omitempty"`
+	} `json:"type,omitempty"`
 	UpdatedAt struct {
-		Type string `json:"type"`
-	} `json:"updated_at"`
+		Type string `json:"type,omitempty"`
+	} `json:"updated_at,omitempty"`
 }
 type MappingInfo struct {
-	Dynamic    string     `json:"dynamic"`
-	Meta       Meta       `json:"_meta"`
-	Properties Properties `json:"properties"`
+	Dynamic    string     `json:"dynamic,omitempty"`
+	Meta       Meta       `json:"_meta,omitempty"`
+	Properties Properties `json:"properties,omitempty"`
 }
 
 //todo 补充
 type Version struct {
-	Created string `json:"created"`
+	Created string `json:"created,omitempty"`
 }
 type IndexObj struct {
-	NumberOfShards     string  `json:"number_of_shards"`
-	AutoExpandReplicas string  `json:"auto_expand_replicas"`
-	ProvidedName       string  `json:"provided_name"`
-	CreationDate       string  `json:"creation_date"`
-	NumberOfReplicas   string  `json:"number_of_replicas"`
-	UUID               string  `json:"uuid"`
-	Version            Version `json:"version"`
+	NumberOfShards     string  `json:"number_of_shards,omitempty"`
+	AutoExpandReplicas string  `json:"auto_expand_replicas,omitempty"`
+	ProvidedName       string  `json:"provided_name,omitempty"`
+	CreationDate       string  `json:"creation_date,omitempty"`
+	NumberOfReplicas   string  `json:"number_of_replicas,omitempty"`
+	UUID               string  `json:"uuid,omitempty"`
+	Version            Version `json:"version,omitempty"`
 }
 type SettingInfo struct {
-	Index IndexObj `json:"op_index"`
+	Index IndexObj `json:"op_index,omitempty"`
 }
 
 //Index 索引api
@@ -171,21 +170,21 @@ type Index struct {
 type IndexErrorInfo struct {
 	Error struct {
 		RootCause []struct {
-			Type         string `json:"type"`
-			Reason       string `json:"reason"`
-			ResourceType string `json:"resource.type"`
-			ResourceID   string `json:"resource.id"`
-			IndexUUID    string `json:"index_uuid"`
-			Index        string `json:"op_index"`
-		} `json:"root_cause"`
-		Type         string `json:"type"`
-		Reason       string `json:"reason"`
-		ResourceType string `json:"resource.type"`
-		ResourceID   string `json:"resource.id"`
-		IndexUUID    string `json:"index_uuid"`
-		Index        string `json:"op_index"`
-	} `json:"error"`
-	Status int `json:"status"`
+			Type         string `json:"type,omitempty"`
+			Reason       string `json:"reason,omitempty"`
+			ResourceType string `json:"resource.type,omitempty"`
+			ResourceID   string `json:"resource.id,omitempty"`
+			IndexUUID    string `json:"index_uuid,omitempty"`
+			Index        string `json:"op_index,omitempty"`
+		} `json:"root_cause,omitempty"`
+		Type         string `json:"type,omitempty"`
+		Reason       string `json:"reason,omitempty"`
+		ResourceType string `json:"resource.type,omitempty"`
+		ResourceID   string `json:"resource.id,omitempty"`
+		IndexUUID    string `json:"index_uuid,omitempty"`
+		Index        string `json:"op_index,omitempty"`
+	} `json:"error,omitempty"`
+	Status int `json:"status,omitempty"`
 }
 
 //Index op_index api
@@ -205,6 +204,10 @@ func IndexApi(client *elastic.Client) *Index {
 
 //新增索引 put
 func (i *Index) Create(ctx context.Context, index string) (*IndexErrorInfo, error) {
+	return i.createIndex(ctx, index, nil)
+}
+
+func (i *Index) createIndex(ctx context.Context, index string, mapping interface{}) (*IndexErrorInfo, error) {
 	var (
 		err   error
 		bdata []byte
@@ -214,8 +217,13 @@ func (i *Index) Create(ctx context.Context, index string) (*IndexErrorInfo, erro
 	if err != nil {
 		return nil, err
 	}
-	rsp, bdata, err = i.client.Put(ctx, i.path, nil)
+	rsp, bdata, err = i.client.Put(ctx, i.path, mapping)
 	return i.wrapResp(err, rsp, bdata)
+}
+
+//新增索引 put
+func (i *Index) CreateWithMapping(ctx context.Context, index string, mapping string) (*IndexErrorInfo, error) {
+	return i.createIndex(ctx, index, mapping)
 }
 
 //wrapResp 包装回包
@@ -270,9 +278,9 @@ func (i *Index) Alias(ctx context.Context, index string) (*AliasInfo, *IndexErro
 
 //MultiAlias 获取多个索引的alias
 func (i *Index) MultiAlias(ctx context.Context, indices ...string) (map[string]*AliasInfo, *IndexErrorInfo, error) {
-	bdata, info, err := doGetAction(ctx,i.baseCtx, op_alias, indices...)
+	bdata, info, err := doGetAction(ctx, i.baseCtx, op_alias, indices...)
 	multiMap := make(map[string]*AliasInfo)
-	err =decodeRespData(bdata, &multiMap)
+	err = decodeRespData(bdata, &multiMap)
 	return multiMap, info, err
 }
 
@@ -289,7 +297,7 @@ func (i *Index) Settings(ctx context.Context, index string) (*SettingInfo, *Inde
 func (i *Index) MultiSettings(ctx context.Context, indices ...string) (map[string]*SettingInfo, *IndexErrorInfo, error) {
 	bdata, info, err := doGetAction(ctx, i.baseCtx, op_setting, indices...)
 	multiMap := make(map[string]*SettingInfo)
-	err =decodeRespData(bdata, &multiMap)
+	err = decodeRespData(bdata, &multiMap)
 	return multiMap, info, err
 }
 
@@ -304,10 +312,17 @@ func (i *Index) Mapping(ctx context.Context, index string) (*MappingInfo, *Index
 
 //MultiMapping 获取多个索引的mappings
 func (i *Index) MultiMapping(ctx context.Context, indices ...string) (map[string]*MappingInfo, *IndexErrorInfo, error) {
-	bdata, info, err := doGetAction(ctx,i.baseCtx,op_mapping, indices...)
-	multiMap := make(map[string]*MappingInfo)
-	err =decodeRespData(bdata, &multiMap)
-	return multiMap, info, err
+	bdata, info, err := doGetAction(ctx, i.baseCtx, op_mapping, indices...)
+	multiMap := make(map[string]*IndexInfo)
+	err = decodeRespData(bdata, &multiMap)
+	if err != nil {
+		return nil, info, err
+	}
+	mappings := make(map[string]*MappingInfo)
+	for key, indexInfo := range multiMap {
+		mappings[key] = indexInfo.Mappings
+	}
+	return mappings, info, err
 }
 
 //AllIndices is the GetAllIndices alias function.
@@ -329,16 +344,14 @@ func (i *Index) GetIndex(ctx context.Context, index string) (*IndexInfo, *IndexE
 //GetMultiIndex 查看多个索引信息
 // if indices is nil or len(indices)==0  path use /_all
 func (i *Index) GetMultiIndex(ctx context.Context, indices ...string) (map[string]*IndexInfo, *IndexErrorInfo, error) {
-	bdata, info, err := doGetAction(ctx, i.baseCtx,op_index, indices...)
+	bdata, info, err := doGetAction(ctx, i.baseCtx, op_index, indices...)
 	if err != nil {
 		return nil, info, err
 	}
 	multiMap := make(map[string]*IndexInfo)
-	err =decodeRespData(bdata, &multiMap)
+	err = decodeRespData(bdata, &multiMap)
 	return multiMap, info, err
 }
-
-
 
 //Erase 擦处信息
 func (i *Index) Erase() (path string, param url.Values) {
