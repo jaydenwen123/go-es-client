@@ -164,7 +164,7 @@ func (d *Document) DeleteWithId(ctx context.Context, id interface{}) (docId stri
 }
 
 //查
-func (d *Document) GetWithId(ctx context.Context, id interface{}) ([]byte, error) {
+func (d *Document) GetWithId(ctx context.Context, id interface{}) (*DocumentInfo, error) {
 	bdata, _, err := d.executeOp(ctx, op_DocGet, id, nil)
 	if err != nil {
 		return nil, err
@@ -172,18 +172,18 @@ func (d *Document) GetWithId(ctx context.Context, id interface{}) ([]byte, error
 	document := new(DocumentInfo)
 	err = json.Unmarshal(bdata, document)
 	if err != nil {
-		return document.Source, err
+		return document, err
 	}
-	return document.Source, nil
+	return document, nil
 }
 
 type DocumentInfo struct {
-	Index       string          `json:"_index"`
-	Type        string          `json:"_type"`
-	ID          string          `json:"_id"`
-	Version     int             `json:"_version"`
-	SeqNo       int             `json:"_seq_no"`
-	PrimaryTerm int             `json:"_primary_term"`
-	Found       bool            `json:"found"`
-	Source      json.RawMessage `json:"_source"`
+	Index       string          `json:"_index,omitempty"`
+	Type        string          `json:"_type,omitempty"`
+	ID          string          `json:"_id,omitempty"`
+	Version     int             `json:"_version,omitempty"`
+	SeqNo       int             `json:"_seq_no,omitempty"`
+	PrimaryTerm int             `json:"_primary_term,omitempty"`
+	Found       bool            `json:"found,omitempty"`
+	Source      json.RawMessage `json:"_source,omitempty"`
 }

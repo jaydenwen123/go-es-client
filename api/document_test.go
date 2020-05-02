@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/jaydenwen123/go-util"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func TestDocument_GetWithId(t *testing.T) {
 		t.Errorf("DocAPI get id error:%s", err.Error())
 		return
 	}
-	t.Logf("docapi get document id success:%s", data)
+	t.Logf("docapi get document id success:\n%s", util.Obj2JsonStrIndent(data,"","\t"))
 }
 
 func TestDocument_AddOrUpdateBodyJson(t *testing.T) {
