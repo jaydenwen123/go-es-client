@@ -8,6 +8,10 @@ import (
 	elastic "github.com/jaydenwen123/go-es-client"
 )
 
+type Query interface {
+	Query(ctx context.Context)
+}
+
 //Do do接口
 type Do interface {
 	Do(ctx context.Context) error
@@ -51,3 +55,4 @@ func (b *baseCtx) Client() *elastic.Client {
 	}
 	return nil
 }
+

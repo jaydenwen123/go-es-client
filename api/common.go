@@ -13,7 +13,7 @@ import (
 type getActionOp string
 
 const (
-	op_index   getActionOp = "index"
+	op_index   getActionOp = "indices"
 	op_mapping getActionOp = "_mapping"
 	op_setting getActionOp = "_settings"
 	op_alias   getActionOp = "_alias"
