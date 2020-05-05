@@ -2,7 +2,7 @@ package api
 
 import "encoding/json"
 
-type QueryDocInfo struct {
+type QueryInfo struct {
 	Took     int     `json:"took,omitempty"`
 	TimedOut bool    `json:"timed_out,omitempty"`
 	Shards   *Shards `json:"_shards,omitempty"`
