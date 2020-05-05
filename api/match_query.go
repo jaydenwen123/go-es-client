@@ -8,15 +8,20 @@ type MatchQuery struct {
 
 //Match match查询
 func (t *Query) Match(field string, value interface{}) *QueryProxy {
+
 	return &QueryProxy{
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Match: map[string]interface{}{
-					field: value,
-				},
+				Match: t.genQuery(field, value),
 			},
 		},
+	}
+}
+
+func (t *Query) genQuery(field string, value interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		field: value,
 	}
 }
 
@@ -26,9 +31,7 @@ func (t *Query) MatchPhrase(field string, value interface{}) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				MatchPhrase: map[string]interface{}{
-					field: value,
-				},
+				MatchPhrase: t.genQuery(field, value),
 			},
 		},
 	}
@@ -40,9 +43,7 @@ func (t *Query) MatchPhrasePrefix(field string, value interface{}) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				MatchPhrasePrefix: map[string]interface{}{
-					field: value,
-				},
+				MatchPhrasePrefix: t.genQuery(field, value),
 			},
 		},
 	}
@@ -82,9 +83,7 @@ func (t *Query) QueryString(fields []string, value interface{}, ) *QueryProxy {
 func (t *Query) MatchAll(field string, value interface{}) *QueryProxy {
 	var query interface{}
 	if len(field) > 0 {
-		query = map[string]interface{}{
-			field: value,
-		}
+		query = t.genQuery(field, value)
 	} else {
 		query = struct{}{}
 	}
@@ -104,7 +103,7 @@ func (t *Query) MatchNone() *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				MatchNone: map[string]interface{}{},
+				MatchNone: struct{}{},
 			},
 		},
 	}

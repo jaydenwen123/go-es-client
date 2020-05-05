@@ -95,18 +95,18 @@ type queryCond struct {
 	Term  map[string]interface{} `json:"term,omitempty"`
 	Terms map[string]interface{} `json:"terms,omitempty"`
 
-	Ids map[string][]string `json:"ids,omitempty"`
+	Ids map[string]interface{} `json:"ids,omitempty"`
 
 	Exists   map[string]interface{}   `json:"exists,omitempty"`
 	Prefix   map[string]interface{}   `json:"prefix,omitempty"`
-	Range    map[string]*RangeCond    `json:"range,omitempty"`
-	Regexp   map[string]*RegexpCond   `json:"regexp,omitempty"`
-	Wildcard map[string]*WildcardCond `json:"wildcard,omitempty"`
+	Range    map[string]interface{}    `json:"range,omitempty"`
+	Regexp   map[string]interface{}   `json:"regexp,omitempty"`
+	Wildcard map[string]interface{} `json:"wildcard,omitempty"`
 
 	//match 相关查询
 	Match             map[string]interface{} `json:"match,omitempty"`
 	MatchAll          interface{}            `json:"match_all,omitempty"`
-	MatchNone         map[string]interface{} `json:"match_none,omitempty"`
+	MatchNone         interface{} `json:"match_none,omitempty"`
 	MatchPhrase       map[string]interface{} `json:"match_phrase,omitempty"`
 	MatchPhrasePrefix map[string]interface{} `json:"match_phrase_prefix,omitempty"`
 	MultiMatch        map[string]interface{} `json:"multi_match,omitempty"`

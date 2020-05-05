@@ -34,9 +34,7 @@ func (t *Query) Ids(values ...string) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Ids: map[string][]string{
-					"values": values,
-				},
+				Ids: t.genQuery("values",values),
 			},
 		},
 	}
@@ -48,9 +46,7 @@ func (t *Query) Exists(field string) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Exists: map[string]interface{}{
-					"field": field,
-				},
+				Exists: t.genQuery("field", field),
 			},
 		},
 	}
@@ -63,9 +59,7 @@ func (t *Query) Prefix(field string, value interface{}) *QueryProxy {
 		QueryCond: &queryCondition{
 			Query: &queryCond{
 				Prefix: map[string]interface{}{
-					field: map[string]interface{}{
-						"value": value,
-					},
+					field: t.genQuery("value", value),
 				},
 			},
 		},
@@ -78,9 +72,7 @@ func (t *Query) Range(field string, value *RangeCond) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Range: map[string]*RangeCond{
-					field: value,
-				},
+				Range: t.genQuery(field, value),
 			},
 		},
 	}
@@ -92,9 +84,7 @@ func (t *Query) Regexp(field string, value *RegexpCond) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Regexp: map[string]*RegexpCond{
-					field: value,
-				},
+				Regexp: t.genQuery(field, value),
 			},
 		},
 	}
@@ -106,9 +96,7 @@ func (t *Query) Wildcard(field string, value *WildcardCond) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Wildcard: map[string]*WildcardCond{
-					field: value,
-				},
+				Wildcard: t.genQuery(field, value),
 			},
 		},
 	}
