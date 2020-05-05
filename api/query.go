@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	elastic "github.com/jaydenwen123/go-es-client"
 	"github.com/jaydenwen123/go-util"
 	"github.com/tidwall/gjson"
-	"strings"
 )
 
 type QueryInfo struct {
