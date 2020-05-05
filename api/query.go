@@ -78,17 +78,43 @@ type RangeCond struct {
 	Boost    float32     `json:"boost,omitempty"`
 }
 
+type RewriteOp string
+
+const (
+	RewriteOp_Constant_Score           RewriteOp = "constant_score" //default
+	RewriteOp_Constant_Score_Boolean   RewriteOp = "constant_score_boolean"
+	RewriteOp_Scoring_Boolean          RewriteOp = "scoring_boolean"
+	RewriteOp_Top_Terms_Blended_reqs_N RewriteOp = "top_terms_blended_freqs_N"
+	RewriteOp_Top_Terms_Boost_N        RewriteOp = "top_terms_boost_N"
+	RewriteOp_Top_Terms_N              RewriteOp = "top_terms_N"
+)
+
+type RegexpFlagOp string
+
+const (
+	RegexpFlagOp_ALL          RegexpFlagOp = "ALL" //default
+	RegexpFlagOp_COMPLEMENT   RegexpFlagOp = "COMPLEMENT"
+	RegexpFlagOp_INTERVAL     RegexpFlagOp = "INTERVAL"
+	RegexpFlagOp_INTERSECTION RegexpFlagOp = "INTERSECTION"
+	RegexpFlagOp_ANYSTRING    RegexpFlagOp = "ANYSTRING"
+)
+
 type RegexpCond struct {
-	Value                 string `json:"value,omitempty"`
-	Flags                 string `json:"flags,omitempty"`
-	MaxDeterminizedStates int    `json:"max_determinized_states,omitempty"`
-	Rewrite               string `json:"rewrite,omitempty"`
+	Value                 string       `json:"value,omitempty"`
+	Flags                 RegexpFlagOp `json:"flags,omitempty"`
+	MaxDeterminizedStates int          `json:"max_determinized_states,omitempty"`
+	Rewrite               RewriteOp    `json:"rewrite,omitempty"`
 }
 
 type WildcardCond struct {
-	Value   string  `json:"value,omitempty"`
-	Rewrite string  `json:"rewrite,omitempty"`
-	Boost   float32 `json:"boost,omitempty"`
+	Value   string    `json:"value,omitempty"`
+	Boost   float32   `json:"boost,omitempty"`
+	Rewrite RewriteOp `json:"rewrite,omitempty"`
+}
+
+type PrefixCond struct {
+	Value   string    `json:"value,omitempty"`
+	Rewrite RewriteOp `json:"rewrite,omitempty"`
 }
 
 type queryCond struct {
@@ -97,16 +123,16 @@ type queryCond struct {
 
 	Ids map[string]interface{} `json:"ids,omitempty"`
 
-	Exists   map[string]interface{}   `json:"exists,omitempty"`
-	Prefix   map[string]interface{}   `json:"prefix,omitempty"`
-	Range    map[string]interface{}    `json:"range,omitempty"`
-	Regexp   map[string]interface{}   `json:"regexp,omitempty"`
+	Exists   map[string]interface{} `json:"exists,omitempty"`
+	Prefix   map[string]interface{} `json:"prefix,omitempty"`
+	Range    map[string]interface{} `json:"range,omitempty"`
+	Regexp   map[string]interface{} `json:"regexp,omitempty"`
 	Wildcard map[string]interface{} `json:"wildcard,omitempty"`
 
 	//match 相关查询
 	Match             map[string]interface{} `json:"match,omitempty"`
 	MatchAll          interface{}            `json:"match_all,omitempty"`
-	MatchNone         interface{} `json:"match_none,omitempty"`
+	MatchNone         interface{}            `json:"match_none,omitempty"`
 	MatchPhrase       map[string]interface{} `json:"match_phrase,omitempty"`
 	MatchPhrasePrefix map[string]interface{} `json:"match_phrase_prefix,omitempty"`
 	MultiMatch        map[string]interface{} `json:"multi_match,omitempty"`

@@ -9,7 +9,9 @@ func TestQueryProxy_Query(t *testing.T) {
 	match := QueryApi(client).
 		Indices("all_articles").
 		Regexp("url", &RegexpCond{
-		Value:                 ".*implement-unary-grpc.+",
+		Value:   ".*implement-unary-grpc.+",
+		Flags:   RegexpFlagOp_ALL,
+		Rewrite: RewriteOp_Constant_Score,
 	})
 	t.Logf("the terms query:\n%s", match.String())
 	queryInfo, err := match.Query(ctx)

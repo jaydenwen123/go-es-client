@@ -6,9 +6,7 @@ func (t *Query) Term(field string, value interface{}) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Term: map[string]interface{}{
-					field: value,
-				},
+				Term: t.genQuery(field, value),
 			},
 		},
 	}
@@ -20,9 +18,7 @@ func (t *Query) Terms(field string, values ...interface{}) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Terms: map[string]interface{}{
-					field: values,
-				},
+				Terms: t.genQuery(field, values),
 			},
 		},
 	}
@@ -34,7 +30,7 @@ func (t *Query) Ids(values ...string) *QueryProxy {
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Ids: t.genQuery("values",values),
+				Ids: t.genQuery("values", values),
 			},
 		},
 	}
@@ -53,14 +49,12 @@ func (t *Query) Exists(field string) *QueryProxy {
 }
 
 //Prefix prefix查询
-func (t *Query) Prefix(field string, value interface{}) *QueryProxy {
+func (t *Query) Prefix(field string, value *PrefixCond) *QueryProxy {
 	return &QueryProxy{
 		term: t,
 		QueryCond: &queryCondition{
 			Query: &queryCond{
-				Prefix: map[string]interface{}{
-					field: t.genQuery("value", value),
-				},
+				Prefix: t.genQuery(field, value),
 			},
 		},
 	}
