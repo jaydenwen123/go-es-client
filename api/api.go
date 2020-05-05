@@ -8,7 +8,7 @@ import (
 	elastic "github.com/jaydenwen123/go-es-client"
 )
 
-type Query interface {
+type Queryer interface {
 	Query(ctx context.Context)
 }
 
